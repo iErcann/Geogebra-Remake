@@ -22,3 +22,25 @@ Ceci est un remake du projet Geogebra en Python.
  ![alt text](https://image.noelshack.com/fichiers/2019/20/4/1558038505-6.png "Logo Title Text 1")
 
  
+### Controles:
+- zqsd: Déplacer le repère
+- e/f : Zoom et Dezoom
+- ijkl: Test de repère en 3D (inutile)
+- c, v, b : Rotation des points dans 3 axes différents
+- n : Reset des angles.
+
+
+### Formalisme des fonctions:
+- f(x)=x      <=> f(x)=1*x
+- f(x)=sin(x) <=> f(x)=math.sin(1*x)
+- f(x)=x²     <=> f(x)=x**2
+- f(x)=4x²+3x^3+sin(x)+log(x) <=> f(x)= 4*x**2+3*x**3+math.sin(1*x)+numpy.log(1*x)
+
+
+
+
+
+
+ 
+ 
+
