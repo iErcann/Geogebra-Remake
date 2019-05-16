@@ -24,7 +24,7 @@ Ceci est un remake du projet Geogebra en Python.
  
 ### Controles:
 - zqsd: Déplacer le repère
-- e/f : Zoom et Dezoom
+- e/r : Zoom et Dezoom
 - ijkl: Test de repère en 3D (inutile)
 - c, v, b : Rotation des points dans 3 axes différents
 - n : Reset des angles.
