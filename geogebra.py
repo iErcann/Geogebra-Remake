@@ -246,74 +246,82 @@ class LeftFrameLabel:
 
 
 class Polygon:
-	def __init__(self, points):
-		self.points = points;
-		self.l = LeftFrameLabel("Polygon " + str(alphabet[len(graph.polygons)%26]));
+    def __init__(self, points):
+    	self.points = points;
+    	self.l = LeftFrameLabel("Polygon " + str(alphabet[len(graph.polygons)%26]));
 
-	def show(self):
-		lastX="nan";
-		lastY="nan";
-		firstX="nan";
-		firstY="nan";
-		#self.points[i].show();
-		rotationZ = [
-			[math.cos(angle[2]), -math.sin(angle[2]), 0],
-			[math.sin(angle[2]), math.cos(angle[2]), 0],
-			[0, 0, 1],
-		];
+    def show(self):
+        lastX="nan";
+        lastY="nan";
+        firstX="nan";
+        firstY="nan";
+        #self.points[i].show();
+        rotationZ = [
+        	[math.cos(angle[2]), -math.sin(angle[2]), 0],
+        	[math.sin(angle[2]), math.cos(angle[2]), 0],
+        	[0, 0, 1],
+        ];
 
-		rotationX = [
-			[1, 0, 0],
-			[0, math.cos(angle[0]), -math.sin(angle[0])],
-			[0, math.sin(angle[0]), math.cos(angle[0])],
-		];
+        rotationX = [
+        	[1, 0, 0],
+        	[0, math.cos(angle[0]), -math.sin(angle[0])],
+        	[0, math.sin(angle[0]), math.cos(angle[0])],
+        ];
 
-		rotationY = [
-			[math.cos(angle[1]), 0, math.sin(angle[1])],
-			[0, 1, 0],
-			[-math.sin(angle[1]), 0, math.cos(angle[1])],
-		];
-
-
-		for i in range(len(self.points)):
-			projected=[];
-			rotated = numpy.dot(rotationY, [self.points[i].graph_posX, self.points[i].graph_posY, self.points[i].posZ]);
-			rotated = numpy.dot(rotationX, rotated);
-			rotated = numpy.dot(rotationZ, rotated);
-			projected2d = numpy.dot(projection, rotated);
-			
-			real_posX = graphToReal(projected2d[0], projected2d[1])[0];
-			real_posY = graphToReal(projected2d[0], projected2d[1])[1];
-			#real_posX = graphToReal(self.points[i].graph_posX, self.points[i].graph_posY)[0]
-			#real_posY = graphToReal(self.points[i].graph_posX, self.points[i].graph_posY)[1]
-			if (lastX is not "nan" and lastY is not "nan"):
-				w.create_line(lastX, lastY, real_posX, real_posY, width=2, fill="IndianRed1");
-			if (i==0):
-				firstX=real_posX;
-				firstY=real_posY;
-				
-			lastX=real_posX;
-			lastY=real_posY;
-			if (i> 1 and i != len(self.points)-1):
-				w.create_line(real_posX, real_posY, firstX, firstY , dash=(4, 2), width=2, fill="IndianRed4");
-			
-		w.create_line(lastX, lastY, firstX, firstY, width=2, fill="IndianRed1");
-
-		#w.create_line(lastX, lastY, graphToReal(self.points[0].graph_posX, self.points[0].graph_posY)[0], graphToReal(self.points[0].graph_posX, self.points[0].graph_posY)[1] , width=2, fill="IndianRed1");
-
-	def delete(self, event):
-		del graph.polygons[graph.polygons.index(self)]
-		self.l._img.grid_forget();
-		self.l.label.grid_forget();
-		self.l.quitLabel.grid_forget();
-		graph.show();
-
-	def showLeftLabel(self):
-		#self.l.text = str(self.name) + "(x) = " + str(self.expression);
-		self.l.show();
-		self.l.quitLabel.bind("<Button-1>", self.delete)
+        rotationY = [
+        	[math.cos(angle[1]), 0, math.sin(angle[1])],
+        	[0, 1, 0],
+        	[-math.sin(angle[1]), 0, math.cos(angle[1])],
+        ];
 
 
+        for i in range(len(self.points)):
+        	projected=[];
+        	rotated = numpy.dot(rotationY, [self.points[i].graph_posX, self.points[i].graph_posY, self.points[i].posZ]);
+        	rotated = numpy.dot(rotationX, rotated);
+        	rotated = numpy.dot(rotationZ, rotated);
+        	projected2d = numpy.dot(projection, rotated);
+
+        	real_posX = graphToReal(projected2d[0], projected2d[1])[0];
+        	real_posY = graphToReal(projected2d[0], projected2d[1])[1];
+        	#real_posX = graphToReal(self.points[i].graph_posX, self.points[i].graph_posY)[0]
+        	#real_posY = graphToReal(self.points[i].graph_posX, self.points[i].graph_posY)[1]
+        	if (lastX is not "nan" and lastY is not "nan"):
+        		w.create_line(lastX, lastY, real_posX, real_posY, width=2, fill="IndianRed1");
+        	if (i==0):
+        		firstX=real_posX;
+        		firstY=real_posY;
+
+        	lastX=real_posX;
+        	lastY=real_posY;
+        	if (i> 1 and i != len(self.points)-1):
+        		w.create_line(real_posX, real_posY, firstX, firstY , dash=(4, 2), width=2, fill="IndianRed4");
+
+        w.create_line(lastX, lastY, firstX, firstY, width=2, fill="IndianRed1");
+
+        #w.create_line(lastX, lastY, graphToReal(self.points[0].graph_posX, self.points[0].graph_posY)[0], graphToReal(self.points[0].graph_posX, self.points[0].graph_posY)[1] , width=2, fill="IndianRed1");
+        # ceci ne marche pas si le polygone n'est pas convexe
+        area = round(self.areaPolygon(), 2);
+        w.create_text(self.points[0].real_posX, self.points[0].real_posY - 15,fill="orange red",font="Arial", activefill="#ffffff", text="Area = " + str(area));
+
+    def delete(self, event):
+    	del graph.polygons[graph.polygons.index(self)]
+    	self.l._img.grid_forget();
+    	self.l.label.grid_forget();
+    	self.l.quitLabel.grid_forget();
+    	graph.show();
+
+    def showLeftLabel(self):
+    	#self.l.text = str(self.name) + "(x) = " + str(self.expression);
+    	self.l.show();
+    	self.l.quitLabel.bind("<Button-1>", self.delete)
+
+    def areaPolygon(self):
+        sommeArea=0
+        for i in range(1, len(self.points)-1):
+            tempTriangle = Triangle([self.points[0], self.points[i], self.points[i+1]])
+            sommeArea += tempTriangle.areaTriangle()
+        return sommeArea;
 
 class Function():
 	def __init__(self, name, expression, color):
@@ -336,134 +344,143 @@ class Function():
 		self.l.quitLabel.bind("<Button-1>", self.delete)
 
 
+class Triangle:
+    def __init__(self, points):
+        self.polygon = Polygon(points);
+
+    def areaTriangle (self):
+        return abs((self.polygon.points[1].graph_posX-self.polygon.points[0].graph_posX)*(self.polygon.points[2].graph_posY-self.polygon.points[0].graph_posY)-(self.polygon.points[2].graph_posX-self.polygon.points[0].graph_posX)*(self.polygon.points[1].graph_posY-self.polygon.points[0].graph_posY))/2
+
 
 class Point:
-	def __init__(self, posX, posY, name):
-		self.graph_posX = posX;
-		self.graph_posY = posY;
-		self.posZ=0;
-		self.name=name;
-		self.size = 7;
-		self.l=LeftFrameLabel( name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")" );
+    def __init__(self, posX, posY, name):
+    	self.graph_posX = posX;
+    	self.graph_posY = posY;
+    	self.posZ=0;
+    	self.name=name;
+    	self.size = 7;
+    	self.l=LeftFrameLabel( name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")" );
 
-	def show(self):
-		rotationZ = [
-			[math.cos(angle[2]), -math.sin(angle[2]), 0],
-			[math.sin(angle[2]), math.cos(angle[2]), 0],
-			[0, 0, 1],
-		];
+    def show(self):
+    	rotationZ = [
+    		[math.cos(angle[2]), -math.sin(angle[2]), 0],
+    		[math.sin(angle[2]), math.cos(angle[2]), 0],
+    		[0, 0, 1],
+    	];
 
-		rotationX = [
-			[1, 0, 0],
-			[0, math.cos(angle[0]), -math.sin(angle[0])],
-			[0, math.sin(angle[0]), math.cos(angle[0])],
-		];
+    	rotationX = [
+    		[1, 0, 0],
+    		[0, math.cos(angle[0]), -math.sin(angle[0])],
+    		[0, math.sin(angle[0]), math.cos(angle[0])],
+    	];
 
-		rotationY = [
-			[math.cos(angle[1]), 0, math.sin(angle[1])],
-			[0, 1, 0],
-			[-math.sin(angle[1]), 0, math.cos(angle[1])],
-		];
+    	rotationY = [
+    		[math.cos(angle[1]), 0, math.sin(angle[1])],
+    		[0, 1, 0],
+    		[-math.sin(angle[1]), 0, math.cos(angle[1])],
+    	];
 
-		projected=[];
-		rotated = numpy.dot(rotationY, [self.graph_posX, self.graph_posY, self.posZ]);
-		rotated = numpy.dot(rotationX, rotated);
-		rotated = numpy.dot(rotationZ, rotated);
-		projected2d = numpy.dot(projection, rotated);
-		
-		self.real_posX = graphToReal(projected2d[0], projected2d[1])[0];
-		self.real_posY = graphToReal(projected2d[0], projected2d[1])[1];
+    	projected=[];
+    	rotated = numpy.dot(rotationY, [self.graph_posX, self.graph_posY, self.posZ]);
+    	rotated = numpy.dot(rotationX, rotated);
+    	rotated = numpy.dot(rotationZ, rotated);
+    	projected2d = numpy.dot(projection, rotated);
 
-		
-		w.create_oval(self.real_posX - self.size/2 , self.real_posY - self.size/2 , self.real_posX + self.size/2,  self.real_posY + self.size/2, width=1, fill = 'thistle2');
-		w.create_text(self.real_posX , self.real_posY-self.size*2 ,fill="dark orange",font="Arial", activefill="#000000", text=self.name);
-		self.l.label.config(text= self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")");
-
-	def delete(self, event):
-		del graph.points[graph.points.index(self)]
-		self.l._img.grid_forget();
-		self.l.label.grid_forget();
-		self.l.quitLabel.grid_forget();
-		graph.show();
-
-	def pointPreference(self):
-		def apply_button():
-			self.graph_posX  = float(self.xEntry.get())
-			self.graph_posY  = float(self.yEntry.get())
-			self.posZ = float(self.zEntry.get());
-			self.name  = self.nameEntry.get()
-			#self.l.text = self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")";
-			self.l.label.config(text= self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")");
-			self.size = self.sizeScale.get()
-			graph.show();
+    	self.real_posX = graphToReal(projected2d[0], projected2d[1])[0];
+    	self.real_posY = graphToReal(projected2d[0], projected2d[1])[1];
 
 
-		self.preference_root =  Toplevel(root)
-		self.preference_root.title("Geogebra revisité")
+    	w.create_oval(self.real_posX - self.size/2 , self.real_posY - self.size/2 , self.real_posX + self.size/2,  self.real_posY + self.size/2, width=1, fill = 'thistle2');
+    	w.create_text(self.real_posX , self.real_posY-self.size*2 ,fill="dark orange",font="Arial", activefill="#000000", text=self.name);
+    	self.l.label.config(text= self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")");
 
-		self.nameLabel = Label(self.preference_root, text="Name");
-		self.nameLabel.grid(row=0, column=0);
+    def delete(self, event):
+    	del graph.points[graph.points.index(self)]
+    	self.l._img.grid_forget();
+    	self.l.label.grid_forget();
+    	self.l.quitLabel.grid_forget();
+    	graph.show();
 
-		self.nameEntry = Entry(self.preference_root, text=str(self.name));
-		self.nameEntry.grid(row=0, column=1);
-		self.nameEntry.delete(0, "end")
-		self.nameEntry.insert(0, str(self.name))
-
-		self.x = Label(self.preference_root, text="x")
-		self.x.grid(row=1, column=1);
-
-		self.y = Label(self.preference_root, text="y")
-		self.y.grid(row=1, column=2);
-
-		self.z = Label(self.preference_root, text="z")
-		self.z.grid(row=1, column=3);
-
-		self.position = Label(self.preference_root, text="Position")
-		self.position.grid(row=2, column=0);
-
-		self.xEntry = Entry(self.preference_root, text="x");
-		self.xEntry.grid(row=2, column=1);
-		self.xEntry.delete(0, "end")
-		self.xEntry.insert(0, str(self.graph_posX))
+    def pointPreference(self):
+    	def apply_button():
+    		self.graph_posX  = float(self.xEntry.get())
+    		self.graph_posY  = float(self.yEntry.get())
+    		self.posZ = float(self.zEntry.get());
+    		self.name  = self.nameEntry.get()
+    		#self.l.text = self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")";
+    		self.l.label.config(text= self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")");
+    		self.size = self.sizeScale.get()
+    		graph.show();
 
 
-		self.yEntry = Entry(self.preference_root, text="y");
-		self.yEntry.grid(row=2, column=2);
-		self.yEntry.delete(0, "end")
-		self.yEntry.insert(0, str(self.graph_posY))
-		
-		self.zEntry = Entry(self.preference_root, text="z");
-		self.zEntry.grid(row=2, column=3);
-		self.zEntry.delete(0, "end")
-		self.zEntry.insert(0, str(self.posZ))
-		
+    	self.preference_root =  Toplevel(root)
+    	self.preference_root.title("Geogebra revisité")
+
+    	self.nameLabel = Label(self.preference_root, text="Name");
+    	self.nameLabel.grid(row=0, column=0);
+
+    	self.nameEntry = Entry(self.preference_root, text=str(self.name));
+    	self.nameEntry.grid(row=0, column=1);
+    	self.nameEntry.delete(0, "end")
+    	self.nameEntry.insert(0, str(self.name))
+
+    	self.x = Label(self.preference_root, text="x")
+    	self.x.grid(row=1, column=1);
+
+    	self.y = Label(self.preference_root, text="y")
+    	self.y.grid(row=1, column=2);
+
+    	self.z = Label(self.preference_root, text="z")
+    	self.z.grid(row=1, column=3);
+
+    	self.position = Label(self.preference_root, text="Position")
+    	self.position.grid(row=2, column=0);
+
+    	self.xEntry = Entry(self.preference_root, text="x");
+    	self.xEntry.grid(row=2, column=1);
+    	self.xEntry.delete(0, "end")
+    	self.xEntry.insert(0, str(self.graph_posX))
 
 
-		self.y = Label(self.preference_root, text="Point Size")
-		self.y.grid(row=3, column=0);
+    	self.yEntry = Entry(self.preference_root, text="y");
+    	self.yEntry.grid(row=2, column=2);
+    	self.yEntry.delete(0, "end")
+    	self.yEntry.insert(0, str(self.graph_posY))
 
-		self.sizeScale = Scale(self.preference_root, from_=0, to=20,  orient=HORIZONTAL)
-		self.sizeScale.set(7)
-		self.sizeScale.grid(row=3, column=1);
-
-
-		'''
-		gap_slider = Scale(preference_root, from_=1, to=50, orient=HORIZONTAL)
-		gap_slider.set(25)
-		gap_slider.grid(row=0, column=1);
-	'''
-		self.apply_button = Button(self.preference_root, text="Apply", command=apply_button);
-		self.apply_button.grid(row=10, column=0);
+    	self.zEntry = Entry(self.preference_root, text="z");
+    	self.zEntry.grid(row=2, column=3);
+    	self.zEntry.delete(0, "end")
+    	self.zEntry.insert(0, str(self.posZ))
 
 
 
+    	self.y = Label(self.preference_root, text="Point Size")
+    	self.y.grid(row=3, column=0);
 
-	def showLeftLabel(self):
-		self.l.text = self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")";
-		self.l.show();
-		self.l.quitLabel.bind("<Button-1>", self.delete)
-		self.l.label.config(command=self.pointPreference)
+    	self.sizeScale = Scale(self.preference_root, from_=0, to=20,  orient=HORIZONTAL)
+    	self.sizeScale.set(7)
+    	self.sizeScale.grid(row=3, column=1);
 
+
+    	'''
+    	gap_slider = Scale(preference_root, from_=1, to=50, orient=HORIZONTAL)
+    	gap_slider.set(25)
+    	gap_slider.grid(row=0, column=1);
+    '''
+    	self.apply_button = Button(self.preference_root, text="Apply", command=apply_button);
+    	self.apply_button.grid(row=10, column=0);
+
+
+
+
+    def showLeftLabel(self):
+    	self.l.text = self.name + " = (" + str(self.graph_posX)+ "," + str(self.graph_posY)+")";
+    	self.l.show();
+    	self.l.quitLabel.bind("<Button-1>", self.delete)
+    	self.l.label.config(command=self.pointPreference)
+
+    def distance(self, otherPoint):
+        return math.sqrt((self.graph_posX  -  otherPoint.graph_posX)**2  +  (self.graph_posY  -  otherPoint.graph_posY)**2);
 
 
 def realToGraph(realX, realY):
